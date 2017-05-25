@@ -1,0 +1,175 @@
+#!/bin/sh
+
+VERSION=1.2.1
+
+MD5=3eb41e5581a7ec78379ace9eb4c1558c
+TELEGRAF=telegraf-${VERSION}_linux_amd64.tar.gz
+
+INFLUX_DB="telegraf"
+INFLUX_HOST="http://influxdb:8086"
+
+USAGE="Usage: $0 [-h] [-i] -m <MACHINE> [-p <PASSWORD>] [-s <HOST>] [-d <DB>]
+
+Install Telegraf
+
+Options:
+    -h             Show this help message
+    -i             Download the i386-architecture binary, instead of 64-bit
+    -p <PASSWORD>  The Password to be used for authentication
+    -m <MACHINE>   The UUID of the monitored machine
+    -s <HOST>      The InfluxDB host to send data to. Defaults to $INFLUX_HOST
+    -d <DB>        The database to write metrics to.  Defaults to $INFLUX_DB
+"
+
+set -e
+
+while getopts ":hip:m:s:p:d:" opt; do
+    case "$opt" in
+        h)
+            echo "$USAGE"
+            exit 0
+            ;;
+        i)
+            MD5=27b12b7bbaef2c683ffc7f0561a50e4e
+            TELEGRAF=telegraf-${VERSION}_linux_i386.tar.gz
+            ;;
+        p)
+            MACHINE_PASS=$OPTARG
+            ;;
+        m)
+            MACHINE_UUID=$OPTARG
+            ;;
+        s)
+            INFLUX_HOST=$OPTARG
+            ;;
+        d)
+            INFLUX_DB=$OPTARG
+            ;;
+        \?)
+            echo "Invalid option: -$OPTARG" >&2
+            echo "$USAGE" >&2
+            exit 1
+    esac
+done
+
+exists() { command -v $@ > /dev/null 2>&1; }
+
+untar() { echo >&2; echo "Extracting $1" >&2; tar -xvf $1; }
+
+fetch() {
+    if [ $# -eq 2 ]; then
+        local dst="$2"
+    fi
+    if exists wget; then
+        [ -n "$dst" ] && local cmd="wget -qO $dst" || local cmd="wget -q"
+    elif exists curl; then
+        [ -n "$dst" ] && local cmd="curl -sSL -o $dst" || local cmd="curl -O -ssL"
+    else
+        echo >&2
+        echo "Failed to locate wget/cURL" >&2
+        echo "Unable to download $1" >&2
+        echo >&2
+        return 1
+    fi
+    echo >&2
+    echo "Fetching $1" >&2
+    echo >&2
+    $cmd $1
+}
+
+checksum() {
+    echo >&2
+    echo "Verifying MD5 sum of $1" >&2
+    sum=$( md5sum $1 | awk '{ print $1 }' )
+    if [ "$sum" != "$MD5" ]; then
+        echo "MD5 mismatch!" >&2
+        echo >&2
+        return 1
+    fi
+}
+
+SCHEME=$( echo "$INFLUX_HOST" | cut -s -d : -f 1 )
+HOST=$( echo "$INFLUX_HOST" | cut -s -d : -f 2 )
+PORT=$( echo "$INFLUX_HOST" | cut -s -d : -f 3 )
+
+if [ -z "$SCHEME" ] || [ -z "$HOST" ] || [-z "$PORT" ]; then
+    echo >&2
+    echo >&2
+    echo "Invalid destination endpoint: $SCHEME://$HOST:$PORT" >&2
+    echo >&2
+    echo >&2
+    echo "$USAGE" >&2
+    exit 1
+fi
+
+if [ -z "$MACHINE_UUID" ]; then
+    echo >&2
+    echo >&2
+    echo "Required argument missing" >&2
+    echo >&2
+    echo >&2
+    echo "$USAGE" >&2
+    exit 1
+fi
+
+WORKDIR=/opt/mistio/
+ENVFILE=/opt/mistio/mist-telegraf/service/mist-telegraf-env
+
+echo >&2
+echo "Setting up working directory at $WORKDIR" >&2
+if [ ! -d $WORKDIR ]; then
+    mkdir -p $WORKDIR
+fi
+cd $WORKDIR && rm -rf *telegraf*
+
+echo >&2
+echo "Setting up Telegraf" >&2
+echo "Monitoring data will be sent to $INFLUX_HOST" >&2
+echo "Monitoring data will be written to database: $INFLUX_DB" >&2
+
+# Download Telegraf binary.
+fetch http://dl.influxdata.com/telegraf/releases/$TELEGRAF
+checksum $TELEGRAF
+untar $TELEGRAF
+
+# Download Telegraf and system config files.
+fetch https://gitlab.ops.mist.io/mistio/mist-telegraf/repository/archive.tar.gz mist-telegraf.tar.gz
+untar mist-telegraf.tar.gz
+
+# Move original directory to get rid of the branch name so that we
+# don't have to worry about it in systemd and init.d files.
+mv $( ls | grep -e ^mist-telegraf-.*$ ) mist-telegraf
+
+echo >&2
+echo "Configuring Telegraf service" >&2
+echo "Appending environment variables to $ENVFILE" >&2
+
+cat > $ENVFILE << EOF
+TELEGRAF_DB="$INFLUX_DB"
+TELEGRAF_HOST="$INFLUX_HOST"
+TELEGRAF_MACHINE="$MACHINE_UUID"
+TELEGRAF_PASSWORD="$MACHINE_PASS"
+EOF
+
+if exists systemctl; then
+    [ -d /lib/systemd/system ] && systemdir=/lib/systemd/system || systemdir=/usr/lib/systemd/system
+    cp -f /opt/mistio/mist-telegraf/service/mist-telegraf.service $systemdir/mist-telegraf.service
+    systemctl enable mist-telegraf
+    systemctl daemon-reload
+    systemctl restart mist-telegraf
+else
+    sed -i "s/^/export /" $ENVFILE
+    cp -f /opt/mistio/mist-telegraf/service/mist-telegraf-init.sh /etc/init.d/mist-telegraf
+    chmod +x /etc/init.d/mist-telegraf
+    if exists update-rc.d; then
+        update-rc.d mist-telegraf defaults
+    else
+        chkconfig --add mist-telegraf
+    fi
+    sleep 1
+    /etc/init.d/mist-telegraf restart
+fi
+
+echo >&2
+echo "Telegraf installed successfully!" >&2
+echo >&2

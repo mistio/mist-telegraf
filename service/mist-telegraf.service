@@ -1,0 +1,16 @@
+[Unit]
+Description=The plugin-driven monitoring agent for sending metrics to mist.io
+Documentation=https://gitlab.ops.mist.io/mistio/mist-telegraf
+After=network.target
+
+[Service]
+EnvironmentFile=-/opt/mistio/mist-telegraf/service/mist-telegraf-env
+User=root
+ExecStart=/opt/mistio/telegraf/usr/bin/telegraf -config /opt/mistio/mist-telegraf/telegraf.conf $TELEGRAF_OPTS
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartForceExitStatus=SIGPIPE
+KillMode=control-group
+
+[Install]
+WantedBy=multi-user.target
