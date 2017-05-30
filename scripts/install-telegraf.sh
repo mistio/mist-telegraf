@@ -92,7 +92,7 @@ SCHEME=$( echo "$INFLUX_HOST" | cut -s -d : -f 1 )
 HOST=$( echo "$INFLUX_HOST" | cut -s -d : -f 2 )
 PORT=$( echo "$INFLUX_HOST" | cut -s -d : -f 3 )
 
-if [ -z "$SCHEME" ] || [ -z "$HOST" ] || [-z "$PORT" ]; then
+if [ -z "$SCHEME" ] || [ -z "$HOST" ] || [ -z "$PORT" ]; then
     echo >&2
     echo >&2
     echo "Invalid destination endpoint: $SCHEME://$HOST:$PORT" >&2
