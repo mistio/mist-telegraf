@@ -110,5 +110,5 @@ docker run -d --name mist-telegraf \
     -e TELEGRAF_DB=$INFLUX_DB \
     -e TELEGRAF_HOST=$INFLUX_HOST \
     -e TELEGRAF_MACHINE=$MACHINE_UUID \
-    -e TELEGRAF_PASS=$MACHINE_PASS \
+    -e TELEGRAF_PASSWORD=$MACHINE_PASS \
     telegraf:1.2.1
