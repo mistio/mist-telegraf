@@ -109,6 +109,6 @@ docker run -d --name mist-telegraf \
     -v /opt/mistio/telegraf.conf:/etc/telegraf/telegraf.conf:ro \
     -e TELEGRAF_DB=$INFLUX_DB \
     -e TELEGRAF_HOST=$INFLUX_HOST \
-    -e TELEGRAF_UUID=$MACHINE_UUID \
+    -e TELEGRAF_MACHINE=$MACHINE_UUID \
     -e TELEGRAF_PASS=$MACHINE_PASS \
     telegraf:1.2.1
