@@ -50,7 +50,7 @@ exists() { command -v $@ > /dev/null 2>&1; }
 
 fetch() {
     if exists wget; then
-        local cmd="wget -q"
+        local cmd="wget"
     elif exists curl; then
         local cmd="curl -O -sSL"
     else

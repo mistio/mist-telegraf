@@ -61,7 +61,7 @@ fetch() {
         local dst="$2"
     fi
     if exists wget; then
-        [ -n "$dst" ] && local cmd="wget -qO $dst" || local cmd="wget -q"
+        [ -n "$dst" ] && local cmd="wget -O $dst" || local cmd="wget"
     elif exists curl; then
         [ -n "$dst" ] && local cmd="curl -sSL -o $dst" || local cmd="curl -O -ssL"
     else
