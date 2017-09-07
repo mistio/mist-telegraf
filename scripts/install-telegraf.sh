@@ -151,7 +151,7 @@ TELEGRAF_MACHINE="$MACHINE_UUID"
 TELEGRAF_PASSWORD="$MACHINE_PASS"
 EOF
 
-if exists systemctl; then
+if exists systemctl && [ "$(cat /proc/1/comm)" = "systemd" ]; then
     [ -d /lib/systemd/system ] && systemdir=/lib/systemd/system || systemdir=/usr/lib/systemd/system
     cp -f /opt/mistio/mist-telegraf/service/mist-telegraf.service $systemdir/mist-telegraf.service
     systemctl enable mist-telegraf
