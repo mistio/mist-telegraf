@@ -1,10 +1,10 @@
 #!/bin/sh
 
-VERSION=1.2.1
+VERSION=path-prefix
 
-MD5=3eb41e5581a7ec78379ace9eb4c1558c
+MD5=9efc8fc4cd7ec720ebc75144899806ff
 TELEGRAF=telegraf-${VERSION}_linux_amd64.tar.gz
-TELEGRAF_DL_PREFIX="http://dl.influxdata.com/telegraf/releases"
+TELEGRAF_DL_PREFIX="https://github.com/dimrozakis/telegraf/releases/download/$VERSION"
 
 INFLUX_DB="telegraf"
 INFLUX_HOST="http://influxdb:8086"
