@@ -88,14 +88,10 @@ checksum() {
     fi
 }
 
-SCHEME=$( echo "$INFLUX_HOST" | cut -s -d : -f 1 )
-HOST=$( echo "$INFLUX_HOST" | cut -s -d : -f 2 )
-PORT=$( echo "$INFLUX_HOST" | cut -s -d : -f 3 )
-
-if [ -z "$SCHEME" ] || [ -z "$HOST" ] || [ -z "$PORT" ]; then
+if ! echo "$INFLUX_HOST" | grep -q -i -E '^https?://[a-z0-9.-]+(:[1-9][0-9]*)?(/.+)?$'; then
     echo >&2
     echo >&2
-    echo "Invalid destination endpoint: $SCHEME://$HOST:$PORT" >&2
+    echo "Invalid destination endpoint: $INFLUX_HOST" >&2
     echo >&2
     echo >&2
     echo "$USAGE" >&2
