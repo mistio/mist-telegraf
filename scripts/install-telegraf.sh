@@ -4,6 +4,7 @@ VERSION=1.2.1
 
 MD5=3eb41e5581a7ec78379ace9eb4c1558c
 TELEGRAF=telegraf-${VERSION}_linux_amd64.tar.gz
+TELEGRAF_DL_PREFIX="http://dl.influxdata.com/telegraf/releases"
 
 INFLUX_DB="telegraf"
 INFLUX_HOST="http://influxdb:8086"
@@ -124,7 +125,7 @@ echo "Monitoring data will be sent to $INFLUX_HOST" >&2
 echo "Monitoring data will be written to database: $INFLUX_DB" >&2
 
 # Download Telegraf binary.
-fetch http://dl.influxdata.com/telegraf/releases/$TELEGRAF
+fetch $TELEGRAF_DL_PREFIX/$TELEGRAF
 checksum $TELEGRAF
 untar $TELEGRAF
 
