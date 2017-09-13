@@ -1,9 +1,10 @@
 #!/bin/sh
 
-VERSION=1.2.1
+VERSION=path-prefix
 
-MD5=3eb41e5581a7ec78379ace9eb4c1558c
+MD5=9efc8fc4cd7ec720ebc75144899806ff
 TELEGRAF=telegraf-${VERSION}_linux_amd64.tar.gz
+TELEGRAF_DL_PREFIX="https://github.com/dimrozakis/telegraf/releases/download/$VERSION"
 
 INFLUX_DB="telegraf"
 INFLUX_HOST="http://influxdb:8086"
@@ -88,14 +89,10 @@ checksum() {
     fi
 }
 
-SCHEME=$( echo "$INFLUX_HOST" | cut -s -d : -f 1 )
-HOST=$( echo "$INFLUX_HOST" | cut -s -d : -f 2 )
-PORT=$( echo "$INFLUX_HOST" | cut -s -d : -f 3 )
-
-if [ -z "$SCHEME" ] || [ -z "$HOST" ] || [ -z "$PORT" ]; then
+if ! echo "$INFLUX_HOST" | grep -q -i -E '^https?://[a-z0-9.-]+(:[1-9][0-9]*)?(/.+)?$'; then
     echo >&2
     echo >&2
-    echo "Invalid destination endpoint: $SCHEME://$HOST:$PORT" >&2
+    echo "Invalid destination endpoint: $INFLUX_HOST" >&2
     echo >&2
     echo >&2
     echo "$USAGE" >&2
@@ -128,7 +125,7 @@ echo "Monitoring data will be sent to $INFLUX_HOST" >&2
 echo "Monitoring data will be written to database: $INFLUX_DB" >&2
 
 # Download Telegraf binary.
-fetch http://dl.influxdata.com/telegraf/releases/$TELEGRAF
+fetch $TELEGRAF_DL_PREFIX/$TELEGRAF
 checksum $TELEGRAF
 untar $TELEGRAF
 
