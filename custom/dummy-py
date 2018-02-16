@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+
+## This is just an example of a python executable used by Telegraf in order to
+## generate and send custom metric using the exec plugin. All scripts under the
+## custom/ directory will be picked up automatically and executed per interval
+## without the need to restart Telegraf. If no scripts are found under custom/,
+## then the child process forked by the `exec` plugin will throw an error. Even
+## though the error is harmless, do not leave custom/ empty to avoid any weird
+## behavior. These dummy scripts have both the role of simple examples, as well
+## as placeholders.
+
+# def read():
+#     import random
+#     return random.random()
+#
+#
+# print 'test value=' + str(read())
