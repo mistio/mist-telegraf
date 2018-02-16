@@ -26,7 +26,7 @@ done
 echo >&2
 echo "Removing Telegraf service" >&2
 
-if which systemctl > /dev/null; then
+if which systemctl > /dev/null && [ "$(cat /proc/1/comm)" = "systemd" ]; then
     systemctl stop mist-telegraf
     systemctl disable mist-telegraf
     if [ -f /lib/systemd/system/mist-telegraf.service ]; then
