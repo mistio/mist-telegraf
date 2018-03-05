@@ -165,6 +165,7 @@ else
     fi
     sleep 1
     /etc/init.d/mist-telegraf restart
+    sleep 3
 fi
 
 echo >&2
