@@ -103,7 +103,7 @@ case $1 in
         if command -v startproc > /dev/null 2>&1; then
             startproc -u "$USER" -g "$GROUP" -p "$PIDFILE" -q -s -- "$DAEMON" -pidfile "$PIDFILE" -config "$CONFIG" $TELEGRAF_OPTS
         elif which start-stop-daemon > /dev/null 2>&1; then
-            start-stop-daemon --chuid $USER:$GROUP --start --quiet -b -m -C --pidfile $PIDFILE --exec $DAEMON -- -pidfile $PIDFILE -config $CONFIG $TELEGRAF_OPTS >>$STDOUT 2>>$STDERR &
+            start-stop-daemon --chuid $USER:$GROUP --start -b -m -C --pidfile $PIDFILE --exec $DAEMON -- -pidfile $PIDFILE -config $CONFIG $TELEGRAF_OPTS >>$STDOUT 2>>$STDERR &
         else
             su -s /bin/sh -c "nohup $DAEMON -pidfile $PIDFILE -config $CONFIG $TELEGRAF_OPTS >>$STDOUT 2>>$STDERR &" $USER
         fi
