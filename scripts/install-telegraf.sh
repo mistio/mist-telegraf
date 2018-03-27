@@ -1,8 +1,8 @@
 #!/bin/sh
 
-VERSION=path-prefix
+VERSION=mem-fix
 
-MD5=9efc8fc4cd7ec720ebc75144899806ff
+MD5=f095cb86b23c6a421fa42ffe2cb9e7e9
 TELEGRAF=telegraf-${VERSION}_linux_amd64.tar.gz
 TELEGRAF_DL_PREFIX="https://github.com/dimrozakis/telegraf/releases/download/$VERSION"
 
