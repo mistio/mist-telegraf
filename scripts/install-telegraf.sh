@@ -1,10 +1,10 @@
 #!/bin/sh
 
-VERSION=mem-fix
+VERSION=1.6.2
 
-MD5=f095cb86b23c6a421fa42ffe2cb9e7e9
+SHA256=a4b0bc6d0fe88545dcc9fd297373fd5ce22eb49f9a4042bdd879b8c075793db8
 TELEGRAF=telegraf-${VERSION}_linux_amd64.tar.gz
-TELEGRAF_DL_PREFIX="https://github.com/dimrozakis/telegraf/releases/download/$VERSION"
+TELEGRAF_DL_PREFIX="https://github.com/influxdata/telegraf/releases/download/$VERSION"
 
 INFLUX_DB="telegraf"
 INFLUX_HOST="http://influxdb:8086"
@@ -31,7 +31,7 @@ while getopts ":hip:m:s:p:d:" opt; do
             exit 0
             ;;
         i)
-            MD5=27b12b7bbaef2c683ffc7f0561a50e4e
+            SHA256=4b8717214d6e983ed468dad819c441418dcc7ec0f3127d056326cb1b8b29f454
             TELEGRAF=telegraf-${VERSION}_linux_i386.tar.gz
             ;;
         p)
@@ -80,10 +80,10 @@ fetch() {
 
 checksum() {
     echo >&2
-    echo "Verifying MD5 sum of $1" >&2
-    sum=$( md5sum $1 | awk '{ print $1 }' )
-    if [ "$sum" != "$MD5" ]; then
-        echo "MD5 mismatch!" >&2
+    echo "Verifying SHA256 sum of $1" >&2
+    sum=$( sha256sum $1 | awk '{ print $1 }' )
+    if [ "$sum" != "$SHA256" ]; then
+        echo "SHA256 mismatch!" >&2
         echo >&2
         return 1
     fi
