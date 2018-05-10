@@ -4,7 +4,7 @@ VERSION=1.6.2
 
 SHA256=a4b0bc6d0fe88545dcc9fd297373fd5ce22eb49f9a4042bdd879b8c075793db8
 TELEGRAF=telegraf-${VERSION}_linux_amd64.tar.gz
-TELEGRAF_DL_PREFIX="https://github.com/influxdata/telegraf/releases/download/$VERSION"
+TELEGRAF_DL_PREFIX="https://dl.influxdata.com/telegraf/releases/$VERSION"
 
 INFLUX_DB="telegraf"
 INFLUX_HOST="http://influxdb:8086"
