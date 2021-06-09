@@ -130,7 +130,7 @@ checksum $TELEGRAF
 untar $TELEGRAF
 
 # Download Telegraf and system config files.
-fetch https://gitlab.ops.mist.io/mistio/mist-telegraf/repository/archive.tar.gz mist-telegraf.tar.gz
+fetch https://gitlab.ops.mist.io/mistio/mist-telegraf/-/archive/master/mist-telegraf-master.tar.gz mist-telegraf.tar.gz
 untar mist-telegraf.tar.gz
 
 # Move original directory to get rid of the branch name so that we
