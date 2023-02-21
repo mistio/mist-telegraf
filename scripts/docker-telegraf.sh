@@ -103,6 +103,7 @@ if [ -z "$MACHINE_UUID" ]; then
     exit 1
 fi
 
+# TODO: Update reference to access from PORTAL_URI
 fetch https://gitlab.ops.mist.io/mistio/mist-telegraf/raw/master/telegraf.conf
 
 docker run -d --name mist-telegraf \
@@ -111,4 +112,4 @@ docker run -d --name mist-telegraf \
     -e TELEGRAF_HOST=$INFLUX_HOST \
     -e TELEGRAF_MACHINE=$MACHINE_UUID \
     -e TELEGRAF_PASSWORD=$MACHINE_PASS \
-    telegraf:1.2.1
+    telegraf:1.25.0

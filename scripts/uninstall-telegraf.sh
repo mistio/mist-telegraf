@@ -1,5 +1,6 @@
 #!/bin/sh
 
+# Usage for help
 USAGE="Usage: $0 [-h]
 
 Uninstall Telegraf
@@ -8,8 +9,10 @@ Options:
     -h             Show this help message
 "
 
+# Exit on any failure
 set -e
 
+# Validate input
 while getopts ":h" opt; do
     case "$opt" in
         h)
@@ -26,6 +29,7 @@ done
 echo >&2
 echo "Removing Telegraf service" >&2
 
+# Remove service
 if which systemctl > /dev/null && [ "$(cat /proc/1/comm)" = "systemd" ]; then
     systemctl stop mist-telegraf
     systemctl disable mist-telegraf
@@ -48,6 +52,7 @@ fi
 echo >&2
 echo "Removing Telegraf files from /opt/mistio/" >&2
 
+# Clean folder
 cd /opt/mistio/ && rm -rf *telegraf*
 
 echo >&2
